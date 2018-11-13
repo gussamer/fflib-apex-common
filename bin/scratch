@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+echo "sfdx force:org:create -f config/fflib-scratch-def.json -a fflib -s"
+sfdx force:org:create -f config/fflib-scratch-def.json -a fflib -s

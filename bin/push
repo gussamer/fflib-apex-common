@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+sfdx force:source:push -w 10

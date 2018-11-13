@@ -1,0 +1,11 @@
+{
+    "orgName": "fflib",
+    "hasSampleData": "true",
+    "edition": "Developer",
+    "features": ["API","DebugApex","AuthorApex"],
+    "settings": {
+        "orgPreferenceSettings": {
+            "s1DesktopEnabled": true
+        }
+    }
+}

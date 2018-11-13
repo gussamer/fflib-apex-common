@@ -2,3 +2,9 @@
 *.prefs
 
 fflib/salesforce.schema
+
+.sfdx
+
+.vscode
+
+node_modules

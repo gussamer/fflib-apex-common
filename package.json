@@ -1,0 +1,27 @@
+{
+  "name": "fflib-apex-common",
+  "version": "1.0.0",
+  "description": "fflib apex common",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "bash ./bin/test",
+    "install": "bash ./bin/install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gussamer/fflib-apex-common.git"
+  },
+  "keywords": [
+    "apex"
+  ],
+  "author": "other people",
+  "bugs": {
+    "url": "https://github.com/gussamer/fflib-apex-common/issues"
+  },
+  "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
+  "dependencies": {
+    "fflib-apex-mocks": "git+https://github.com/gussamer/fflib-apex-mocks.git"
+  }
+}

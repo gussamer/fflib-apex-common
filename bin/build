@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+echo "sfdx force:source:convert -d src -n fflib"
+sfdx force:source:convert -d src -n fflib

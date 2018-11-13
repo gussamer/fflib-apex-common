@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+bin/build
+bin/deploy
