@@ -1,3 +1,2 @@
 #!/usr/bin/bash
-echo "sfdx force:mdapi:deploy -d src -w 5 -c -l RunLocalTests"
-sfdx force:mdapi:deploy -d src -w 5 -c -l RunLocalTests
+sfdx force:apex:test:run -l RunLocalTests -d ./test_results -r json -w 10

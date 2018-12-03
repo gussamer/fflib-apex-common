@@ -1,3 +1,2 @@
 #!/usr/bin/bash
-echo "sfdx force:mdapi:deploy -d src -w 5"
 sfdx force:mdapi:deploy -d src -w 5

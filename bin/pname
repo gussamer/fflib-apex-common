@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+var packageJSON = require('fs').readFileSync('./package.json')
+var pack = JSON.parse(packageJSON)
+console.log(pack.name)

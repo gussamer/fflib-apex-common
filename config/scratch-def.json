@@ -1,6 +1,6 @@
 {
     "orgName": "fflib",
-    "hasSampleData": "true",
+    "hasSampleData": "false",
     "edition": "Developer",
     "features": ["API","DebugApex","AuthorApex"],
     "settings": {

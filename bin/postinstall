@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+pname="$(./bin/pname)"
+if [ "$setup_package" = "$pname" ]; then
+  bash ./bin/push
+else
+  bash ./bin/build
+  bash ./bin/deploy
+fi

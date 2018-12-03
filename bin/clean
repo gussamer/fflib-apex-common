@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+pname="$(./bin/pname)"
+./bin/isScratched && sfdx force:org:delete -u "$pname" -p
