@@ -1,3 +1,3 @@
-[submodule "node_modules/fflib-apex-mocks"]
+[submodule "lib/apexmocks"]
     path = node_modules/fflib-apex-mocks
     url = https://github.com/gussamer/fflib-apex-mocks.git
