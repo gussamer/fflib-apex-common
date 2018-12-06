@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-sfdx force:mdapi:deploy -d src -w 5
+sfdx force:mdapi:deploy -d src -w 5 -u "$setup_package"
