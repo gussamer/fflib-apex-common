@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-sfdx force:apex:test:run -l RunLocalTests -d ./test_results -r json -w 10
+sfdx force:apex:test:run -l RunLocalTests -d -w 10
