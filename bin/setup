@@ -1,6 +1,5 @@
 #!/usr/bin/bash
-pname="$(./bin/pname)"
-./bin/isScratched || ./bin/scratch
-export setup_package="$pname"
+./bin/isscratched || ./bin/scratch
+export setup_package="$(./bin/getprojectname)"
 npm install
 export setup_package=""

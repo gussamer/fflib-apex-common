@@ -1,6 +1,5 @@
 #!/usr/bin/bash
-pname="$(./bin/pname)"
-if [ "$setup_package" = "$pname" ]; then
+if [ "$setup_package" = "$(./bin/getprojectname)" ]; then
   bash ./bin/push
 else
   bash ./bin/build
