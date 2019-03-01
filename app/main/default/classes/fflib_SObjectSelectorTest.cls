@@ -239,14 +239,6 @@ private with sharing class fflib_SObjectSelectorTest
 		Matcher soqlMatcher = soqlPattern.matcher(soql);
 		system.assert(soqlMatcher.matches(), 'The SOQL should have that expected.');
 	}
-
-	@isTest
-	static void testConfigureFieldsOnOwnerId()
-	{
-		Testfflib_SObjectSelector2 userSelector = new Testfflib_SObjectSelector2(false, false, false, false);
-		Testfflib_SObjectSelector3 LeadSelector = new Testfflib_SObjectSelector3(false, false, false, false);
-		
-	}
 	
 	private static void assertEqualsSelectFields(String expectedSelectFields, String actualSelectFields)
 	{
@@ -286,75 +278,6 @@ private with sharing class fflib_SObjectSelectorTest
 		public override String getOrderBy()
 		{
 			return 'Name DESC, AnnualRevenue ASC NULLS LAST';
-		}
-	}
-	
-	private class Testfflib_SObjectSelector2 extends fflib_SObjectSelector
-	{
-		public Testfflib_SObjectSelector()
-		{
-			super();
-		}
-
-		public Testfflib_SObjectSelector(Boolean includeFieldSetFields, Boolean enforceCRUD, Boolean enforceFLS, Boolean sortSelectFields)
-		{
-			super(includeFieldSetFields, enforceCRUD, enforceFLS, sortSelectFields);
-		}
-		
-		public List<Schema.SObjectField> getSObjectFieldList()
-		{
-			return new List<Schema.SObjectField> {
-				User.FirstName,
-				User.LastName,
-				User.Id,
-				User.UserName,
-				User.Email,
-				User.UserType
-			};
-		}
-		
-		public Schema.SObjectType getSObjectType()
-		{
-			return User.sObjectType;
-		}
-		
-		public override String getOrderBy()
-		{
-			return 'UserName DESC, AnnualRevenue ASC NULLS LAST';
-		}
-	}
-	
-	private class Testfflib_SObjectSelector3 extends fflib_SObjectSelector
-	{
-		public Testfflib_SObjectSelector()
-		{
-			super();
-		}
-
-		public Testfflib_SObjectSelector(Boolean includeFieldSetFields, Boolean enforceCRUD, Boolean enforceFLS, Boolean sortSelectFields)
-		{
-			super(includeFieldSetFields, enforceCRUD, enforceFLS, sortSelectFields);
-		}
-		
-		public List<Schema.SObjectField> getSObjectFieldList()
-		{
-			return new List<Schema.SObjectField> {
-				Lead.FirstName,
-				Lead.LastName,
-				Lead.Id,
-				Lead.Company,
-				Lead.OwnerId
-			};
-		}
-		
-		public Schema.SObjectType getSObjectType()
-		{
-			return Lead.sObjectType;
-		}
-		
-		public override String getOrderBy()
-		{
-			return 'LastName DESC, AnnualRevenue ASC NULLS LAST';
 		}
 	}
 	
