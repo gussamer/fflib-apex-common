@@ -1,2 +1,2 @@
-#!/usr/bin/bash
-sfdx force:source:convert -d src -n "$(./bin/getprojectname)"
+#!/usr/bin/env bash
+sfdx force:source:convert -d ./src -n "$(./bin/getprojectname)"

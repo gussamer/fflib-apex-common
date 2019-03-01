@@ -1,2 +1,2 @@
-#!/usr/bin/bash
-sfdx force:mdapi:deploy -d src -w 5 -u "$setup_package"
+#!/usr/bin/env bash
+sfdx force:source:deploy -p ./app/main/default -w 5 -u "$setup_package"

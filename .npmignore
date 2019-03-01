@@ -1,0 +1,10 @@
+build.properties.template
+build.xml
+test_results
+images
+interfacemocks.properties
+lib
+.sfdx
+.travis.yml
+fflib
+.vscode

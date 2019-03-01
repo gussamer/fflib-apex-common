@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 pname="$(./bin/getprojectname)"
-sfdx force:org:create -f config/scratch-def.json -a "$pname"
+sfdx force:org:create -f ./config/scratch-def.json -a "$pname"
 sfdx force:config:set defaultusername=$pname

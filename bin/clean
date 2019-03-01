@@ -1,2 +1,2 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 ./bin/isScratched && sfdx force:org:delete -u "$(./bin/getprojectname)" -p

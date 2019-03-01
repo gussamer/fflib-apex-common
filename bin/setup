@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 ./bin/isscratched || ./bin/scratch
 export setup_package="$(./bin/getprojectname)"
 npm install
