@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-echo "push PWD: $PWD"
 DXPM_SETUP_PACKAGE_NAME="$1"
 if [ "$DXPM_SETUP_PACKAGE_NAME" = "" ]; then
   DXPM_SETUP_PACKAGE_NAME="$($PWD/bin/getprojectname)"
