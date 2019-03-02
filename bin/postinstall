@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo "[+] check if $DXPM_CURRENT_PACKAGE_NAME is the package being setup or a dependancy"
+echo "[+] check if $DXPM_CURRENT_PACKAGE_NAME is the setup package $DXPM_SETUP_PACKAGE_NAME or a dependancy of $DXPM_SETUP_PACKAGE_NAME"
 if [ "$DXPM_SETUP_PACKAGE_NAME" = "$DXPM_CURRENT_PACKAGE_NAME" ]; then
   echo "[+] setting up for $DXPM_CURRENT_PACKAGE_NAME development and testing"
   bash ./bin/push && wait

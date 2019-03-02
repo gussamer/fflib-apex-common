@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 export DXPM_CURRENT_PACKAGE_NAME="$(./bin/getprojectname)"
+echo "[+] set $DXPM_CURRENT_PACKAGE_NAME as the current package name"
+echo "[+] begin install of $DXPM_CURRENT_PACKAGE_NAME"
 if [ "$DXPM_SETUP_PACKAGE_NAME" = "" ]; then
   export DXPM_SETUP_PACKAGE_NAME="$DXPM_CURRENT_PACKAGE_NAME"
+  echo "[+] install is being run directly so will use $DXPM_CURRENT_PACKAGE_NAME as setup package name"
 fi
-echo "[+] set $DXPM_CURRENT_PACKAGE_NAME as the current package name"
 if [ "$DXPM_SETUP_PACKAGE_NAME" = "$DXPM_CURRENT_PACKAGE_NAME" ]; then
   echo "[+] removing dependancies for $DXPM_CURRENT_PACKAGE_NAME to force reinstall"
   rm -fr ./node_modules/*
