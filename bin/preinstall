@@ -1,2 +1,8 @@
 #!/usr/bin/env bash
-rm -fr ./node_modules/*
+export DXPM_CURRENT_PACKAGE_NAME="$(./bin/getprojectname)"
+echo "[+] set $DXPM_CURRENT_PACKAGE_NAME as the current package name"
+if [ "$setup_package" = "$DXPM_CURRENT_PACKAGE_NAME" ]; then
+  echo "[+] removing dependancies for $DXPM_CURRENT_PACKAGE_NAME to force reinstall"
+  rm -fr ./node_modules/*
+  echo "[+] finished removing dependancies for $DXPM_CURRENT_PACKAGE_NAME"
+fi

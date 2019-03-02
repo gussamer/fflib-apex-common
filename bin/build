@@ -1,2 +1,5 @@
 #!/usr/bin/env bash
-sfdx force:source:convert -d ./src -n "$(./bin/getprojectname)"
+pname="$(./bin/getprojectname)"
+echo "[+] converting source for $pname"
+sfdx force:source:convert -d ./src -n "$pname" && wait
+echo "[+] finished converting source for $pname"

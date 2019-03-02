@@ -1,7 +1,7 @@
 {
-  "name": "fflib-apex-common",
+  "name": "npm-fflib-common",
   "version": "1.0.0",
-  "description": "fflib apex common",
+  "description": "fflib apex common not official in any capacity",
   "scripts": {
     "pretest": "bash ./bin/setup",
     "test": "bash ./bin/test",
@@ -18,12 +18,11 @@
   "keywords": [
     "apex"
   ],
-  "author": "other people",
+  "author": "Not Me",
   "bugs": {
     "url": "https://github.com/gussamer/fflib-apex-common/issues"
   },
   "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
   "dependencies": {
-    "fflib-apex-mocks": "git+https://github.com/gussamer/fflib-apex-mocks.git"
   }
 }

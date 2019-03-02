@@ -1,5 +1,5 @@
 {
-    "orgName": "fflib",
+    "orgName": "npm-fflib-common",
     "hasSampleData": "false",
     "edition": "Developer",
     "features": ["API","DebugApex","AuthorApex"],

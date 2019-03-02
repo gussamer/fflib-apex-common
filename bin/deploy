@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-sfdx force:source:deploy -p ./app/main/default -w 5 -u "$setup_package"
+echo "[+] deploying $DXPM_CURRENT_PACKAGE_NAME metadata to scratch org $DXPM_SETUP_PACKAGE_NAME"
+sfdx force:source:deploy -p ./app/main/default -w 5 -u "$DXPM_SETUP_PACKAGE_NAME" && wait
+echo "[+] finished deploying $DXPM_CURRENT_PACKAGE_NAME metadata to scratch org $DXPM_SETUP_PACKAGE_NAME"

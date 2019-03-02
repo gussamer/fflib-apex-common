@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-./bin/isScratched && sfdx force:org:delete -u "$(./bin/getprojectname)" -p
+echo "[+] checking if $DXPM_SETUP_PACKAGE_NAME scrach org exists and deleting it"
+./bin/isscratched && sfdx force:org:delete -u "$DXPM_SETUP_PACKAGE_NAME" -p && wait
+echo "[+] finished cleaning $DXPM_SETUP_PACKAGE_NAME scrach org"

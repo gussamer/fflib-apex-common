@@ -1,2 +1,5 @@
 #!/usr/bin/env bash
-sfdx force:apex:test:run -l RunLocalTests -d ./test_results -r json -w 10
+project_name="$(./bin/getprojectname)"
+echo "[+] running tests for $project_name"
+sfdx force:apex:test:run -l RunLocalTests -d ./test_results -r json -w 10 -u "$project_name" && wait
+echo "[+] finished running tests for $project_name"

@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
-if [ "$setup_package" = "$(./bin/getprojectname)" ]; then
-  bash ./bin/push
+echo "[+] check if $DXPM_CURRENT_PACKAGE_NAME is the package being setup or a dependancy"
+if [ "$DXPM_SETUP_PACKAGE_NAME" = "$DXPM_CURRENT_PACKAGE_NAME" ]; then
+  echo "[+] setting up for $DXPM_CURRENT_PACKAGE_NAME development and testing"
+  bash ./bin/push && wait
+  echo "[+] finished setting up for $DXPM_CURRENT_PACKAGE_NAME development and testing"
 else
-  bash ./bin/build
-  bash ./bin/deploy
+  echo "[+] installing dependancy $DXPM_CURRENT_PACKAGE_NAME of $DXPM_SETUP_PACKAGE_NAME"
+  bash ./bin/build && wait
+  bash ./bin/deploy && wait
+  echo "[+] finished installing dependancy $DXPM_CURRENT_PACKAGE_NAME of $DXPM_SETUP_PACKAGE_NAME"
 fi
+export DXPM_CURRENT_PACKAGE_NAME=""

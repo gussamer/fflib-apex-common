@@ -1,2 +1,5 @@
 #!/usr/bin/env bash
-sfdx force:source:push -w 10
+pname="$(./bin/getprojectname)"
+echo "[+] pushing source to scratch org $pname"
+sfdx force:source:push -w 10 -u "$pname" && wait
+echo "[+] finished pushing source to scratch org $pname"
