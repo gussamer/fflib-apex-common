@@ -1,6 +1,6 @@
 {
   "name": "npm-fflib-common",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "fflib apex common not official in any capacity",
   "scripts": {
     "pretest": "bash ./bin/setup",
@@ -24,6 +24,6 @@
   },
   "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
   "dependencies": {
-    "npm-fflib-mocks": "^1.0.2"
+    "npm-fflib-mocks": "^1.0.3"
   }
 }
