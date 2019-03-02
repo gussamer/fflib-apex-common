@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-export DXPM_SETUP_PACKAGE_NAME="$(./bin/getprojectname)"
-export DXPM_CURRENT_PACKAGE_NAME="$DXPM_SETUP_PACKAGE_NAME"
+export DXPM_SETUP_PACKAGE_NAME="$($INIT_CWD/bin/getprojectname)"
+export DXPM_CURRENT_PACKAGE_NAME="$($CWD/bin/getprojectname)"
 echo "[+] checking if $DXPM_SETUP_PACKAGE_NAME scrach org exists or creating it"
 ./bin/isscratched || ./bin/scratch && wait
 echo "[+] installing package $DXPM_SETUP_PACKAGE_NAME"
