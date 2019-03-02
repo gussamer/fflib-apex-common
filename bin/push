@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+echo "push CWD: $CWD"
+DXPM_SETUP_PACKAGE_NAME="$1"
 if [ "$DXPM_SETUP_PACKAGE_NAME" = "" ]; then
-  DXPM_SETUP_PACKAGE_NAME="$(./bin/getprojectname)"
+  DXPM_SETUP_PACKAGE_NAME="$($CWD/bin/getprojectname)"
 fi
 echo "[+] pushing source to scratch org $DXPM_SETUP_PACKAGE_NAME"
-sfdx force:source:push -w 10 -u "$DXPM_SETUP_PACKAGE_NAME" && wait
+$CWD/bin/getprojectname && sfdx force:source:push -w 10 -u "$DXPM_SETUP_PACKAGE_NAME" && wait || echo "[+] pushing source to scratch org $DXPM_SETUP_PACKAGE_NAME failed"
 echo "[+] finished pushing source to scratch org $DXPM_SETUP_PACKAGE_NAME"

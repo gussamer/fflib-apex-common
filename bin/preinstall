@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+echo "[!] preinstall CWD: $CWD"
+echo "[!] preinstall INIT_CWD: $INIT_CWD"
 DXPM_SETUP_PACKAGE_NAME="$($INIT_CWD/bin/getprojectname)"
 DXPM_CURRENT_PACKAGE_NAME="$($CWD/bin/getprojectname)"
 echo "[+] begin install of $DXPM_CURRENT_PACKAGE_NAME"

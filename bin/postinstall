@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+echo "[!] postinstall CWD: $CWD"
+echo "[!] postinstall INIT_CWD: $INIT_CWD"
 DXPM_SETUP_PACKAGE_NAME="$($INIT_CWD/bin/getprojectname)"
 DXPM_CURRENT_PACKAGE_NAME="$($CWD/bin/getprojectname)"
 echo "[+] check if $DXPM_CURRENT_PACKAGE_NAME is the setup package $DXPM_SETUP_PACKAGE_NAME or a dependancy of $DXPM_SETUP_PACKAGE_NAME"

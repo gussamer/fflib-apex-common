@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+echo "build CWD: $CWD"
+DXPM_CURRENT_PACKAGE_NAME="$1"
 if [ "$DXPM_CURRENT_PACKAGE_NAME" = "" ]; then
-  DXPM_CURRENT_PACKAGE_NAME="$(./bin/getprojectname)"
+  DXPM_CURRENT_PACKAGE_NAME="$($CWD/bin/getprojectname)"
 fi
 echo "[+] converting source for $DXPM_CURRENT_PACKAGE_NAME"
 sfdx force:source:convert -d "./src" -n "$DXPM_CURRENT_PACKAGE_NAME" && wait
