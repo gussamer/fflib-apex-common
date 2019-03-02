@@ -6,7 +6,6 @@ if [ "$DXPM_SETUP_PACKAGE_NAME" = "$DXPM_CURRENT_PACKAGE_NAME" ]; then
   echo "[+] finished setting up for $DXPM_CURRENT_PACKAGE_NAME development and testing"
 else
   echo "[+] installing dependancy $DXPM_CURRENT_PACKAGE_NAME of $DXPM_SETUP_PACKAGE_NAME"
-  bash ./bin/build && wait
   bash ./bin/deploy && wait
   echo "[+] finished installing dependancy $DXPM_CURRENT_PACKAGE_NAME of $DXPM_SETUP_PACKAGE_NAME"
 fi

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-pname="$(./bin/getprojectname)"
-echo "[+] pushing source to scratch org $pname"
-sfdx force:source:push -w 10 -u "$pname" && wait
-echo "[+] finished pushing source to scratch org $pname"
+if [ "$DXPM_SETUP_PACKAGE_NAME" = "" ]; then
+  DXPM_SETUP_PACKAGE_NAME="$(./bin/getprojectname)"
+fi
+echo "[+] pushing source to scratch org $DXPM_SETUP_PACKAGE_NAME"
+sfdx force:source:push -w 10 -u "$DXPM_SETUP_PACKAGE_NAME" && wait
+echo "[+] finished pushing source to scratch org $DXPM_SETUP_PACKAGE_NAME"

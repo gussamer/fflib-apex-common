@@ -24,5 +24,6 @@
   },
   "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
   "dependencies": {
+    "npm-fflib-mocks": "^1.0.1"
   }
 }

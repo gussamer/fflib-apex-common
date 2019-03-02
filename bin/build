@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-pname="$(./bin/getprojectname)"
-echo "[+] converting source for $pname"
-sfdx force:source:convert -d ./src -n "$pname" && wait
-echo "[+] finished converting source for $pname"
+if [ "$DXPM_CURRENT_PACKAGE_NAME" = "" ]; then
+  DXPM_CURRENT_PACKAGE_NAME="$(./bin/getprojectname)"
+fi
+echo "[+] converting source for $DXPM_CURRENT_PACKAGE_NAME"
+sfdx force:source:convert -d "./src" -n "$DXPM_CURRENT_PACKAGE_NAME" && wait
+echo "[+] finished converting source for $DXPM_CURRENT_PACKAGE_NAME"

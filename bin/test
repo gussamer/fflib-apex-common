@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-project_name="$(./bin/getprojectname)"
-echo "[+] running tests for $project_name"
-sfdx force:apex:test:run -l RunLocalTests -d ./test_results -r json -w 10 -u "$project_name" && wait
-echo "[+] finished running tests for $project_name"
+if [ "$DXPM_SETUP_PACKAGE_NAME" = "" ]; then
+  DXPM_SETUP_PACKAGE_NAME="$(./bin/getprojectname)"
+fi
+echo "[+] running tests for $DXPM_SETUP_PACKAGE_NAME"
+sfdx force:apex:test:run -l RunLocalTests -d ./test_results -r json -w 10 -u "$DXPM_SETUP_PACKAGE_NAME" && wait
+echo "[+] finished running tests for $DXPM_SETUP_PACKAGE_NAME"
