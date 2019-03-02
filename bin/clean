@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-echo "clean CWD: $CWD"
+echo "clean PWD: $PWD"
 DXPM_SETUP_PACKAGE_NAME="$1"
 if [ "$DXPM_SETUP_PACKAGE_NAME" = "" ]; then
-  DXPM_SETUP_PACKAGE_NAME="$($CWD/bin/getprojectname)"
+  DXPM_SETUP_PACKAGE_NAME="$($PWD/bin/getprojectname)"
 fi
 echo "[+] checking if $DXPM_SETUP_PACKAGE_NAME scrach org exists and deleting it"
 ./bin/isscratched && sfdx force:org:delete -u "$DXPM_SETUP_PACKAGE_NAME" -p && wait

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-echo "deploy CWD: $CWD"
+echo "deploy PWD: $PWD"
 DXPM_SETUP_PACKAGE_NAME="$1"
 if [ "$DXPM_SETUP_PACKAGE_NAME" = "" ]; then
-  DXPM_SETUP_PACKAGE_NAME="$($CWD/bin/getprojectname)"
+  DXPM_SETUP_PACKAGE_NAME="$($PWD/bin/getprojectname)"
 fi
 DXPM_CURRENT_PACKAGE_NAME="$2"
 if [ "$DXPM_CURRENT_PACKAGE_NAME" = "" ]; then
   DXPM_CURRENT_PACKAGE_NAME="$DXPM_SETUP_PACKAGE_NAME"
 fi
 echo "[+] deploying $DXPM_CURRENT_PACKAGE_NAME metadata to scratch org $DXPM_SETUP_PACKAGE_NAME"
-sfdx force:source:deploy -p $CWD/app/main/default -w 5 -u "$DXPM_SETUP_PACKAGE_NAME" && wait
+sfdx force:source:deploy -p $PWD/app/main/default -w 5 -u "$DXPM_SETUP_PACKAGE_NAME" && wait
 echo "[+] finished deploying $DXPM_CURRENT_PACKAGE_NAME metadata to scratch org $DXPM_SETUP_PACKAGE_NAME"
