@@ -54,3 +54,4 @@ fflib/salesforce.schema
 node_modules
 sfdx-source/group*
 research/
+bin/qfpm/
