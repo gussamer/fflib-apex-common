@@ -1,6 +1,6 @@
 {
     "name": "npm-fflib-common",
-    "version": "1.0.19",
+    "version": "1.0.20",
     "description": "fflib apex common not official in any capacity",
     "scripts": {
         "pretest": "bash ./bin/setup",
