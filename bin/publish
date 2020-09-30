@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+git fetch upstream
+git checkout master
+git merge upstream/master && wait
+npm update --save
+git add --all
+git commit -m "upped dependancy versions"
+echo "[!] Updated you package.json to nexst version and then hit any key to continue!"
+read conti
+git add --all
+git commit -m "upped package version"
+git push
+npm publish
