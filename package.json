@@ -16,7 +16,6 @@
         "isscratched": "bash ./bin/qfpm/isscratched",
         "push": "bash ./bin/qfpm/push",
         "scratch": "bash ./bin/qfpm/scratch",
-        "publish": "bash ./bin/publish",
         "isqfpm": "bash ./bin/qfpm/isqfpm"
     },
     "repository": {
