@@ -15,7 +15,9 @@
         "getprojectname": "bash ./bin/qfpm/getprojectname",
         "isscratched": "bash ./bin/qfpm/isscratched",
         "push": "bash ./bin/qfpm/push",
-        "scratch": "bash ./bin/qfpm/scratch"
+        "scratch": "bash ./bin/qfpm/scratch",
+        "publish": "bash ./bin/publish",
+        "isqfpm": "bash ./bin/qfpm/isqfpm"
     },
     "repository": {
         "type": "git",
@@ -30,7 +32,7 @@
     },
     "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
     "dependencies": {
-        "npm-fflib-mocks": "^1.0.17",
-        "qfpm": "^1.0.13"
+        "npm-fflib-mocks": "^1.0.18",
+        "qfpm": "^1.0.17"
     }
 }
