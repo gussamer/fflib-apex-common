@@ -1,7 +1,7 @@
 {
     "name": "npm-fflib-common",
-    "version": "1.0.22",
-    "description": "fflib apex common not official in any capacity",
+    "version": "1.0.23",
+    "description": "unofficial npm fflib apex common",
     "scripts": {
         "pretest": "bash ./bin/setup",
         "test": "bash ./bin/qfpm/test",
@@ -25,13 +25,14 @@
     "keywords": [
         "apex"
     ],
-    "author": "Not Me",
+    "license": "BSD-3-Clause",
+    "author": "https://github.com/apex-enterprise-patterns/fflib-apex-common/graphs/contributors",
     "bugs": {
         "url": "https://github.com/gussamer/fflib-apex-common/issues"
     },
     "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
     "dependencies": {
-        "npm-fflib-mocks": "^1.0.18",
+        "npm-fflib-mocks": "^1.0.19",
         "qfpm": "^1.0.17"
     }
 }
