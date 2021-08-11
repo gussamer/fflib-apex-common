@@ -42,16 +42,13 @@ sfdx-source/untracked/
 .execanon
 
 # NPM Related
-package.json
 /node_modules
-package-lock.json
 
 
 fflib/salesforce.schema
 
 .vscode
 
-node_modules
 sfdx-source/group*
 research/
 bin/qfpm/
