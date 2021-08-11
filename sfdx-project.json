@@ -1,7 +1,7 @@
 {
     "packageDirectories": [
         {
-            "path": "sfdx-source/apex-mocks",
+            "path": "sfdx-source/apex-common",
             "default": true
         }
     ],
