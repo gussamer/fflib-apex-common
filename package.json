@@ -1,6 +1,6 @@
 {
     "name": "npm-fflib-common",
-    "version": "1.0.23",
+    "version": "1.0.24",
     "description": "unofficial npm fflib apex common",
     "scripts": {
         "pretest": "bash ./bin/setup",
@@ -16,7 +16,8 @@
         "isscratched": "bash ./bin/qfpm/isscratched",
         "push": "bash ./bin/qfpm/push",
         "scratch": "bash ./bin/qfpm/scratch",
-        "isqfpm": "bash ./bin/qfpm/isqfpm"
+        "isqfpm": "bash ./bin/qfpm/isqfpm",
+        "getsrcfolders": "bash ./bin/qfpm/getsrcfolders"
     },
     "repository": {
         "type": "git",
@@ -32,7 +33,7 @@
     },
     "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
     "dependencies": {
-        "npm-fflib-mocks": "^1.0.19",
-        "qfpm": "^1.0.17"
+        "npm-fflib-mocks": "^1.0.20",
+        "qfpm": "^1.0.18"
     }
 }
