@@ -1,6 +1,6 @@
 {
     "name": "npm-fflib-common",
-    "version": "1.0.28",
+    "version": "1.0.29",
     "description": "unofficial npm fflib apex common",
     "repository": {
         "type": "git",
@@ -34,7 +34,7 @@
         "test": "bash ./bin/qfpm/test.sh"
     },
     "dependencies": {
-        "npm-fflib-mocks": "^1.0.23",
-        "qfpm": "^1.0.21"
+        "npm-fflib-mocks": "^1.0.24",
+        "qfpm": "^1.0.22"
     }
 }
