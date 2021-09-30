@@ -1,31 +1,15 @@
 {
     "name": "npm-fflib-common",
-    "version": "1.0.27",
+    "version": "1.0.28",
     "description": "unofficial npm fflib apex common",
-    "scripts": {
-        "pretest": "bash ./bin/setup",
-        "test": "bash ./bin/qfpm/test",
-        "posttest": "bash ./bin/clean",
-        "preinstall": "bash ./bin/qfpm/preinstall",
-        "postinstall": "bash ./bin/qfpm/postinstall",
-        "setup": "bash ./bin/qfpm/setup",
-        "clean": "bash ./bin/qfpm/clean",
-        "build": "bash ./bin/qfpm/build",
-        "deploy": "bash ./bin/qfpm/deploy",
-        "getprojectname": "bash ./bin/qfpm/getprojectname",
-        "isscratched": "bash ./bin/qfpm/isscratched",
-        "push": "bash ./bin/qfpm/push",
-        "scratch": "bash ./bin/qfpm/scratch",
-        "isqfpm": "bash ./bin/qfpm/isqfpm",
-        "getsrcfolders": "bash ./bin/qfpm/getsrcfolders",
-        "removedepends": "bash ./bin/qfpm/removedepends"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/gussamer/fflib-apex-common.git"
     },
     "keywords": [
-        "apex"
+        "apex",
+        "sfdx",
+        "salesforce"
     ],
     "license": "BSD-3-Clause",
     "author": "https://github.com/apex-enterprise-patterns/fflib-apex-common/graphs/contributors",
@@ -33,8 +17,24 @@
         "url": "https://github.com/gussamer/fflib-apex-common/issues"
     },
     "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
+    "scripts": {
+        "build": "bash ./bin/qfpm/build.sh",
+        "clean": "bash ./bin/qfpm/clean.sh",
+        "deploy": "bash ./bin/qfpm/deploy.sh",
+        "getprojectname": "node ./bin/qfpm/getprojectname.js",
+        "getsrcfolders": "node ./bin/qfpm/getsrcfolders.js",
+        "isqfpm": "node ./bin/qfpm/isqfpm.js",
+        "isscratched": "node ./bin/qfpm/isscratched.js",
+        "postinstall": "bash ./bin/qfpm/postinstall.sh",
+        "preinstall": "bash ./bin/qfpm/preinstall.sh",
+        "push": "bash ./bin/qfpm/push.sh",
+        "removedepends": "bash ./bin/qfpm/removedepends.sh",
+        "scratch": "bash ./bin/qfpm/scratch.sh",
+        "setup": "bash ./bin/qfpm/setup.sh",
+        "test": "bash ./bin/qfpm/test.sh"
+    },
     "dependencies": {
-        "npm-fflib-mocks": "^1.0.22",
-        "qfpm": "^1.0.19"
+        "npm-fflib-mocks": "^1.0.23",
+        "qfpm": "^1.0.21"
     }
 }
