@@ -52,3 +52,4 @@ fflib/salesforce.schema
 sfdx-source/group*
 research/
 bin/qfpm/
+manifest
