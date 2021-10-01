@@ -1,6 +1,6 @@
 {
     "name": "npm-fflib-common",
-    "version": "1.0.31",
+    "version": "1.0.32",
     "description": "unofficial npm fflib apex common",
     "repository": {
         "type": "git",
@@ -18,23 +18,23 @@
     },
     "homepage": "https://github.com/gussamer/fflib-apex-common#readme",
     "scripts": {
-        "build": "node_modules/.bin/qbuild",
-        "clean": "node_modules/.bin/qclean",
-        "deploy": "node_modules/.bin/qdeploy",
-        "getprojectname": "node_modules/.bin/qgetprojectname",
-        "getsrcfolders": "node_modules/.bin/qgetsrcfolders",
-        "isqfpm": "node_modules/.bin/qisqfpm",
-        "isscratched": "node_modules/.bin/qisscratched",
-        "postinstall": "node_modules/.bin/qpostinstall",
-        "preinstall": "node_modules/.bin/qpreinstall",
-        "push": "node_modules/.bin/qpush",
-        "removedepends": "node_modules/.bin/qremovedepends",
-        "scratch": "node_modules/.bin/qscratch",
-        "setup": "node_modules/.bin/qsetup",
-        "test": "node_modules/.bin/qtest"
+        "build": "qbuild",
+        "clean": "qclean",
+        "deploy": "qdeploy",
+        "getprojectname": "qgetprojectname",
+        "getsrcfolders": "qgetsrcfolders",
+        "isqfpm": "qisqfpm",
+        "isscratched": "qisscratched",
+        "postinstall": "qpostinstall",
+        "preinstall": "qpreinstall",
+        "push": "qpush",
+        "removedepends": "qremovedepends",
+        "scratch": "qscratch",
+        "setup": "qsetup",
+        "test": "qtest"
     },
     "dependencies": {
-        "npm-fflib-mocks": "^1.0.27",
-        "qfpm": "^1.0.25"
+        "npm-fflib-mocks": "^1.0.29",
+        "qfpm": "^1.0.26"
     }
 }
