@@ -34,7 +34,7 @@
         "test": "qtest"
     },
     "dependencies": {
-        "npm-fflib-mocks": "^1.0.29",
-        "qfpm": "^1.0.26"
+        "npm-fflib-mocks": "^1.1.0",
+        "qfpm": "^1.1.0"
     }
 }
