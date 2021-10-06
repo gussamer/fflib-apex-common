@@ -47,9 +47,7 @@ sfdx-source/untracked/
 
 fflib/salesforce.schema
 
-.vscode
-
 sfdx-source/group*
 research/
-bin/qfpm/
 manifest
+test_results
