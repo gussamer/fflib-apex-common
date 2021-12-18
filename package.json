@@ -35,7 +35,7 @@
         "updepends": "bash ./bin/update.sh"
     },
     "dependencies": {
-        "npm-fflib-mocks": "^1.1.0",
-        "qfpm": "^1.1.0"
+        "npm-fflib-mocks": "^1.1.1",
+        "qfpm": "^1.1.1"
     }
 }
