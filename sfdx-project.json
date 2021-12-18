@@ -7,5 +7,10 @@
     ],
     "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
+<<<<<<< HEAD
     "sourceApiVersion": "52.0"
 }
+=======
+    "sourceApiVersion": "53.0"
+}
+>>>>>>> upstream/master

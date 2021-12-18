@@ -1,7 +1,7 @@
 {
     "name": "npm-fflib-common",
-    "version": "1.1.0",
-    "description": "unofficial npm fflib apex common",
+    "version": "1.1.1",
+    "description": "the unofficial npm fflib apex common mirror",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/gussamer/fflib-apex-common.git"
@@ -31,7 +31,8 @@
         "removedepends": "qremovedepends",
         "scratch": "qscratch",
         "setup": "qsetup",
-        "test": "qtest"
+        "test": "qtest",
+        "updepends": "bash ./bin/update.sh"
     },
     "dependencies": {
         "npm-fflib-mocks": "^1.1.0",

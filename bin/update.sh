@@ -4,4 +4,4 @@ git checkout master
 git merge upstream/master && wait
 npm update --save
 git add --all
-git commit -m "updated stuff"
+git commit -m "upped dependancy versions"
