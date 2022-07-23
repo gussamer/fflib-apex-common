@@ -37,6 +37,7 @@ IlluminatedCloud/
 
 # SFDX Related
 .sfdx/
+.sf/
 sfdx-source/common-base/main/default/
 sfdx-source/untracked/
 .execanon
@@ -49,5 +50,8 @@ fflib/salesforce.schema
 
 sfdx-source/group*
 research/
+<<<<<<< HEAD
 manifest
 test_results
+=======
+>>>>>>> upstream/master
