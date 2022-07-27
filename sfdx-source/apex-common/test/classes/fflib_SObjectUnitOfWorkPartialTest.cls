@@ -25,7 +25,7 @@
 **/
 
 @IsTest(IsParallel=true)
-private with sharing class fflib_SObjectUnitOfWorkTest
+private with sharing class fflib_SObjectUnitOfWorkPartialTest
 {
     // SObjects (in order of dependency) used by UnitOfWork in tests bellow
     private static List<Schema.SObjectType> MY_SOBJECTS =
@@ -44,10 +44,10 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         email.setToAddresses(new List<String>{ 'foobar@test.com' });
         email.setPlainTextBody('See Spot run.');
 
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial uow = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
 
-        uow.m_emailWork = new Mock_SendEmailWork();
+        uow.m_emailWorkPartial = new Mock_SendEmailWorkPartial();
 
         Opportunity opp = new Opportunity();
         opp.Name = testRecordName;
@@ -59,10 +59,10 @@ private with sharing class fflib_SObjectUnitOfWorkTest
 
         uow.registerRelationship( email, opp );
 
-        uow.commitWork();
+        uow.commitWork(false);
 
         // assert that mock email functionality was called
-        System.assert(((Mock_SendEmailWork) uow.m_emailWork).doWorkWasCalled);
+        System.assert(((Mock_SendEmailWorkPartial) uow.m_emailWorkPartial).doWorkWasCalled);
 
         System.assertEquals(1, mockDML.recordsForInsert.size());
     }
@@ -72,7 +72,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     {
         // GIVEN an existing record
         Opportunity opportunity = new Opportunity(Id = fflib_IDGenerator.generate(Schema.Opportunity.SObjectType));
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS);
 
         // WHEN we register the existing record as new
         Boolean exceptionThrown = false;
@@ -99,7 +99,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     {
         // GIVEN an new record
         Opportunity opportunity = new Opportunity();
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS);
 
         // WHEN we register the existing record as new
         Boolean exceptionThrown = false;
@@ -127,8 +127,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         // GIVEN - two existing records
         Opportunity opportunity = new Opportunity(Id = fflib_IDGenerator.generate(Schema.Opportunity.SObjectType));
         Product2 product = new Product2(Id = fflib_IDGenerator.generate(Schema.Product2.SObjectType));
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
 
         // WHEN - we mark the records as deleted
         unitOfWork.registerDeleted(new List<SObject> { opportunity, product });
@@ -144,8 +144,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         // GIVEN - two existing records
         Opportunity opportunity = new Opportunity(Id = fflib_IDGenerator.generate(Schema.Opportunity.SObjectType));
         Product2 product = new Product2(Id = fflib_IDGenerator.generate(Schema.Product2.SObjectType));
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
 
         // WHEN - we mark the records as deleted
         unitOfWork.registerPermanentlyDeleted(new List<SObject> { opportunity, product });
@@ -161,8 +161,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     {
         // GIVEN - an existing record of the recycle bin
         Opportunity opportunity = new Opportunity(Id = fflib_IDGenerator.generate(Schema.Opportunity.SObjectType));
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
 
         // WHEN - we empty the record from the recycle bin
         unitOfWork.registerEmptyRecycleBin(new List<Opportunity>{ opportunity });
@@ -175,7 +175,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @IsTest
     private static void testAssertForNonEventSObjectType()
     {
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS);
         unitOfWork.assertForNonEventSObjectType('CustomObject__c');
     }
 
@@ -183,7 +183,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     private static void testAssertForNonEventSObjectType_ThrowExceptionOnEventObject()
     {
         Boolean exceptionThrown = false;
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS);
         try
         {
             unitOfWork.assertForNonEventSObjectType('PlatformEventObject__e');
@@ -203,7 +203,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @IsTest
     private static void testAssertForEventSObjectType()
     {
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS);
         unitOfWork.assertForEventSObjectType('PlatformEventObject__e');
     }
 
@@ -211,7 +211,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     private static void testAssertForEventSObjectType_ThrowExceptionOnNonEventObject()
     {
         Boolean exceptionThrown = false;
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS);
         try
         {
             unitOfWork.assertForEventSObjectType('CustomObject__c');
@@ -232,7 +232,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     private static void testAssertForSupportedSObjectType_throwExceptionOnUnsupportedType()
     {
         Boolean exceptionThrown = false;
-        fflib_SObjectUnitOfWork unitOfWork = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
+        fflib_SObjectUnitOfWorkPartial unitOfWork = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS);
         try
         {
             unitOfWork.registerNew(new Account());
@@ -261,7 +261,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     private static void testDerivedUnitOfWork_CommitSuccess()
     {
         // Insert Opportunities with UnitOfWork
-        MockDML mockDML = new MockDML();
+        MockDMLPartial mockDML = new MockDMLPartial();
         DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS, mockDML);
         for(Integer o=0; o<10; o++)
         {
@@ -363,7 +363,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     private static void testDerivedUnitOfWork_CommitDoWorkFail()
     {
         // Insert Opportunities with UnitOfWork
-        MockDML mockDML = new MockDML();
+        MockDMLPartial mockDML = new MockDMLPartial();
         DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS, mockDML);
         Opportunity opp = new Opportunity();
         opp.Name = 'UoW Test Name 1';
@@ -372,14 +372,14 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         uow.registerNew(new List<SObject>{opp});
 
         // register work that will fail during processing
-        FailDoingWork fdw = new FailDoingWork();
+        FailDoingWorkPartial fdw = new FailDoingWorkPartial();
         uow.registerWork(fdw);
 
         Boolean didFail = false;
         FailDoingWorkException caughtEx = null;
 
         try {
-            uow.commitWork();
+            uow.commitWork(false);
         }
         catch (FailDoingWorkException fdwe) {
             didFail = true;
@@ -423,8 +423,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         Opportunity opp = new Opportunity(Id = insertedOpp.Id, Name = 'Never');
         Opportunity opp2 = new Opportunity(Id = insertedOpp.Id, Name = 'Expected');
 
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial uow = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
         uow.registerDirty(opp);
         uow.registerDirty(opp2);
         uow.commitWork();
@@ -450,8 +450,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
 
         Opportunity nameUpdate = new Opportunity(Id = opp.Id, Name = 'UpdateName');
         Opportunity amountUpdate = new Opportunity(Id = opp.Id, Amount = 250);
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial uow = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
         uow.registerDirty(nameUpdate);
         uow.registerDirty(amountUpdate, new List<SObjectField> { Opportunity.Amount } );
         uow.commitWork();
@@ -480,8 +480,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
                 StageName = 'Open',
                 CloseDate = System.today());
 
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial uow = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
         uow.registerDirty(new List<Opportunity>{ opportunityA, opportunityB });
 
         // WHEN we register the records again with different fields updated
@@ -541,8 +541,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
                 StageName = 'Open',
                 CloseDate = System.today());
 
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial uow = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
         uow.registerDirty(new List<Opportunity>{ opportunityA, opportunityB });
 
         // WHEN we register the records again with different fields updated
@@ -620,8 +620,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         Opportunity newOpportunity = new Opportunity(Name = 'New Opportunity', StageName = 'Closed', CloseDate = System.today());
 
         Test.startTest();
-        MockDML mockDML = new MockDML();
-        fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS, mockDML);
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial uow = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
         uow.registerUpsert(new List<Opportunity>{existingOpp, newOpportunity});
         uow.commitWork();
         Test.stopTest();
@@ -654,9 +654,9 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     /**
      * DoWork implementation that throws exception during processing
      */
-    private class FailDoingWork implements fflib_SObjectUnitOfWork.IDoWork
+    private class FailDoingWorkPartial implements fflib_SObjectUnitOfWorkPartial.IDoWorkPartial
     {
-        public void doWork()
+        public void doWork(Map<String,Map<String,Object>> resultMap)
         {
             throw new FailDoingWorkException('Work failed.');
         }
@@ -665,7 +665,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     /**
      * Derived unit of work that tracks event notifications and handle registration of type
      */
-    private class DerivedUnitOfWork extends fflib_SObjectUnitOfWork
+    private class DerivedUnitOfWork extends fflib_SObjectUnitOfWorkPartial
     {
         private List<String> m_commitWorkEventsFired = new List<String>();
         private Set<Schema.SObjectType> m_registeredTypes = new Set<Schema.SObjectType>();
@@ -683,6 +683,11 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         public DerivedUnitOfWork(List<Schema.SObjectType> sObjectTypes)
         {
             super(sObjectTypes);
+        }
+
+        public DerivedUnitOfWork(List<Schema.SObjectType> sObjectTypes, IDMLP dml)
+        {
+            super(sObjectTypes, dml);
         }
 
         public DerivedUnitOfWork(List<Schema.SObjectType> sObjectTypes, IDML dml)
@@ -753,6 +758,16 @@ private with sharing class fflib_SObjectUnitOfWorkTest
             addEvent('onCommitWorkFinishing');
         }
 
+        public override void onPublishAfterEventsStartingPartial(Map<String,Map<String,Object>> resultMap)
+        {
+            addEvent('onPublishAfterEventsStarting');
+        }
+
+        public override void onPublishAfterEventsFinishedPartial(Map<String,Map<String,Object>> resultMap)
+        {
+            addEvent('onPublishAfterEventsFinished');
+        }
+
         public override void onPublishAfterSuccessEventsStarting()
         {
             addEvent('onPublishAfterSuccessEventsStarting');
@@ -780,11 +795,11 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     }
 
     /**
-     * Mock implementation of fflib_SObjectUnitOfWork.SendEmailWork
+     * Mock implementation of fflib_SObjectUnitOfWorkPartial.SendEmailWork
      **/
-    private class Mock_SendEmailWork implements fflib_SObjectUnitOfWork.IEmailWork
+    private class Mock_SendEmailWorkPartial implements fflib_SObjectUnitOfWorkPartial.IEmailWorkPartial
     {
-        public Mock_SendEmailWork()
+        public Mock_SendEmailWorkPartial()
         {
         }
 
@@ -792,10 +807,10 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         {
         }
 
-        public void doWork()
+        public void doWork(Map<String,Map<String,Object>> resultMap)
         {
             doWorkWasCalled = true;
-            // The code in the fflib_SObjectUnitOfWork class
+            // The code in the fflib_SObjectUnitOfWorkPartial class
             // causes unit test failures in Orgs that do not
             // have email enabled.
         }
@@ -803,7 +818,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         private Boolean doWorkWasCalled = false;
     }
 
-    private class MockDML implements fflib_SObjectUnitOfWork.IDML
+    private class MockDMLPartial implements fflib_SObjectUnitOfWorkPartial.IDMLP
     {
         public List<SObject> recordsForInsert = new List<SObject>();
         public List<SObject> recordsForUpdate = new List<SObject>();
@@ -811,29 +826,117 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         public List<SObject> recordsForRecycleBin = new List<SObject>();
         public List<SObject> recordsForEventPublish = new List<SObject>();
 
-        public void dmlInsert(List<SObject> objList)
-        {
-            this.recordsForInsert.addAll(objList);
+        public Boolean isSuccess = true;
+
+        public List<Object> errorFormatArgList = new List<Object>{
+            'REQUIRED_FIELD_MISSING'
+            ,'Required fields are missing: [Name]'
+            ,'[ "Name" ]'
+        };
+        public String errorFormatString = '{'
+                                    +'  "statusCode" : "{0}",'
+                                    +'  "message" : "{1}",'
+                                    +'  "fields" : {2}'
+                                    +'}';
+
+        public String getError(){
+            return String.format(errorFormatString,errorFormatArgList);
         }
 
-        public void dmlUpdate(List<SObject> objList)
+        public virtual List<Database.SaveResult> dmlInsert(List<SObject> objList)
         {
-            this.recordsForUpdate.addAll(objList);
+            List<Database.SaveResult> returnList = new List<Database.SaveResult>();
+            String jsonList = '[';
+            for(SObject so:objList){
+                String newId;
+                if(isSuccess) newId = fflib_IDGenerator.generate(so.getSObjectType());
+                so.Id = newId;
+                this.recordsForInsert.add(so);
+                if(jsonList!='[') jsonList += ',';
+                jsonList += '{'
+                +'  "id" : "'+newId+'",'
+                +'  "success" : '+(isSuccess?'true':'false')+','
+                +'  "errors" : ['+(isSuccess?'':getError())+']'
+                +'}';
+            }
+            jsonList += ']';
+            returnList = (List<Database.SaveResult>) JSON.deserialize(jsonList, List<Database.SaveResult>.class);
+            return returnList;
         }
-
-        public void dmlDelete(List<SObject> objList)
+        public virtual List<Database.SaveResult> dmlUpdate(List<SObject> objList)
         {
-            this.recordsForDelete.addAll(objList);
+            List<Database.SaveResult> returnList = new List<Database.SaveResult>();
+            String jsonList = '[';
+            for(SObject so:objList){
+                this.recordsForUpdate.add(so);
+                if(jsonList!='[') jsonList += ',';
+                jsonList += '{'
+                +'  "id" : "'+so.Id+'",'
+                +'  "success" : '+(isSuccess?'true':'false')+','
+                +'  "errors" : ['+(isSuccess?'':getError())+']'
+                +'}';
+            }
+            jsonList += ']';
+            returnList = (List<Database.SaveResult>) JSON.deserialize(jsonList, List<Database.SaveResult>.class);
+            return returnList;
         }
-
-        public void eventPublish(List<SObject> objList)
+        public virtual List<Database.DeleteResult> dmlDelete(List<SObject> objList)
         {
-            this.recordsForEventPublish.addAll(objList);
+            List<Database.DeleteResult> returnList = new List<Database.DeleteResult>();
+            String jsonList = '[';
+            for(SObject so:objList){
+                this.recordsForDelete.add(so);
+                if(jsonList!='[') jsonList += ',';
+                jsonList += '{'
+                +'  "id" : "'+so.Id+'",'
+                +'  "success" : '+(isSuccess?'true':'false')+','
+                +'  "errors" : ['+(isSuccess?'':getError())+']'
+                +'}';
+            }
+            jsonList += ']';
+            returnList = (List<Database.DeleteResult>) JSON.deserialize(jsonList, List<Database.DeleteResult>.class);
+            return returnList;
         }
-
-        public void emptyRecycleBin(List<SObject> objList)
+        public virtual List<Database.SaveResult> eventPublish(List<SObject> objList)
         {
-            this.recordsForRecycleBin.addAll(objList);
+            List<Database.SaveResult> returnList = new List<Database.SaveResult>();
+            String jsonList = '[';
+            for(SObject so:objList){
+                String newId;
+                if(isSuccess) newId = fflib_IDGenerator.generate(so.getSObjectType());
+                so.Id = newId;
+                this.recordsForEventPublish.add(so);
+                if(jsonList!='[') jsonList += ',';
+                jsonList += '{'
+                +'  "id" : "'+newId+'",'
+                +'  "success" : '+(isSuccess?'true':'false')+','
+                +'  "errors" : ['+(isSuccess?'':getError())+']'
+                +'}';
+            }
+            jsonList += ']';
+            returnList = (List<Database.SaveResult>) JSON.deserialize(jsonList, List<Database.SaveResult>.class);
+            return returnList;
+        }
+        public virtual List<Database.EmptyRecycleBinResult> emptyRecycleBin(List<SObject> objList)
+        {
+            if (objList.isEmpty())
+            {
+                return new List<Database.EmptyRecycleBinResult>();
+            }
+            List<Database.EmptyRecycleBinResult> returnList = new List<Database.EmptyRecycleBinResult>();
+            String jsonList = '[';
+            for(SObject so:objList){
+                this.recordsForRecycleBin.add(so);
+                if(jsonList!='[') jsonList += ',';
+                jsonList += '{'
+                +'  "id" : "'+so.Id+'",'
+                +'  "success" : '+(isSuccess?'true':'false')+','
+                +'  "errors" : ['+(isSuccess?'':getError())+']'
+                +'}';
+            }
+            jsonList += ']';
+            returnList = (List<Database.EmptyRecycleBinResult>) JSON.deserialize(jsonList, List<Database.EmptyRecycleBinResult>.class);
+            return returnList;
         }
     }
 
