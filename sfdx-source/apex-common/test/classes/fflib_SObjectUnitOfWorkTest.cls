@@ -269,7 +269,6 @@ private with sharing class fflib_SObjectUnitOfWorkTest
             opp.Name = 'UoW Test Name ' + o;
             opp.StageName = 'Open';
             opp.CloseDate = System.today();
-            opp.Pricebook2Id = Test.getStandardPricebookId();
             uow.registerNew(new List<SObject>{opp});
             for(Integer i=0; i<o+1; i++)
             {

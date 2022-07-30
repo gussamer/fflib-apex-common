@@ -95,12 +95,17 @@ public virtual class fflib_SObjectUnitOfWorkPartial
      */
     public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes)
     {
-        super(sObjectTypes);
+      this(sObjectTypes,new SimpleDMLPartial());
     }
     public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes, IDMLP dml)
     {
         super(sObjectTypes);
         m_dmlp = dml;
+        for (Schema.SObjectType sObjectType : m_sObjectTypes)
+        {
+            // register the type
+            handleRegisterTypePartial(sObjectType);
+        }
     }
     public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes, fflib_SObjectUnitOfWork.IDML dml)
     {
@@ -155,16 +160,7 @@ public virtual class fflib_SObjectUnitOfWorkPartial
         String sObjectName = sObjectType.getDescribe().getName();
 
         // add type to dml operation tracking
-        m_newListByType.put(sObjectName, new List<SObject>());
-        m_dirtyMapByType.put(sObjectName, new Map<Id, SObject>());
-        m_deletedMapByType.put(sObjectName, new Map<Id, SObject>());
-	    m_emptyRecycleBinMapByType.put(sObjectName, new Map<Id, SObject>());
-        m_relationships.put(sObjectName, new Relationships());
-
-        m_publishBeforeListByType.put(sObjectName, new List<SObject>());
         m_publishAfterListByType.put(sObjectName, new List<SObject>());
-        m_publishAfterSuccessListByType.put(sObjectName, new List<SObject>());
-        m_publishAfterFailureListByType.put(sObjectName, new List<SObject>());
 
         // give derived class opportunity to register the type
         onRegisterTypePartial(sObjectType);
@@ -255,12 +251,8 @@ public virtual class fflib_SObjectUnitOfWorkPartial
 	private void publishBeforeEventsStartingPartial(Map<String,Map<String,Object>> resultMap)
 	{
 		resultMap.put('publishBeforeEventsStarting',new Map<String,Object>());
-        for (Schema.SObjectType sObjectType : m_sObjectTypes)
+    for (Schema.SObjectType sObjectType : m_sObjectTypes)
 		{
-      System.debug(resultMap);
-      System.debug(resultMap.get('publishBeforeEventsStarting'));
-      System.debug(sObjectType);
-      System.debug(m_publishBeforeListByType);
 			resultMap.get('publishBeforeEventsStarting').put(
                 sObjectType.getDescribe().getName()
                 ,m_dmlp.eventPublish(m_publishBeforeListByType.get(sObjectType.getDescribe().getName()))
@@ -324,7 +316,13 @@ public virtual class fflib_SObjectUnitOfWorkPartial
 		m_workListPartial.add(m_emailWorkPartial);
 		for (IDoWorkPartial work : m_workListPartial)
 		{
-			work.doWork(resultMap);
+      try{
+        work.doWork(resultMap);
+      }catch(Exception e){
+        if(!resultMap.containsKey('doWorkPartial'))
+          resultMap.put('doWorkPartial',new Map<String,Object>());
+        resultMap.get('doWorkPartial').put(work.toString(),e);
+      }
 		}
 	}
 
