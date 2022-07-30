@@ -164,7 +164,7 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
      *
      *	Testing:
      *
-     *		- Correct events are fired when commitWork completes successfully
+     *		- Correct events are fired when commitWork completes successfully with allOrNone = true
      *
      */
     @IsTest
@@ -223,7 +223,7 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
      *
      *	Testing:
      *
-     *		- Correct events are fired when commitWork completes successfully
+     *		- Correct events are fired when commitWork completes successfully with allOrNone = false
      *
      */
     @IsTest
@@ -324,7 +324,7 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
      *
      *	Testing:
      *
-     *		- Correct events are fired when commitWork fails during DML processing
+     *		- Correct events are fired when commitWork fails during DML processing with allOrNone = false
      *
      */
     @IsTest
@@ -430,7 +430,7 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
      *
      *	Testing:
      *
-     *		- Correct events are fired when commitWork fails during DoWork processing
+     *		- Correct events are fired when commitWork fails during DoWork processing with allOrNone = false
      *
      */
     @isTest
