@@ -698,7 +698,7 @@ public virtual class fflib_SObjectUnitOfWork
 		}
 	}
 
-	private void resolveEmailRelationships()
+	protected void resolveEmailRelationships()
 	{
 		m_relationships.get(Messaging.SingleEmailMessage.class.getName()).resolve();
 	}
@@ -720,7 +720,7 @@ public virtual class fflib_SObjectUnitOfWork
 		}
 	}
 
-	private void publishAfterFailureEvents()
+	public void publishAfterFailureEvents()
 	{
 		for (Schema.SObjectType sObjectType : m_sObjectTypes)
 		{
@@ -728,8 +728,7 @@ public virtual class fflib_SObjectUnitOfWork
 		}
 	}
 
-	@TestVisible
-	private void assertForNonEventSObjectType(String sObjectType)
+	public void assertForNonEventSObjectType(String sObjectType)
 	{
 		if (sObjectType.length() > 3 && sObjectType.right(3)  == '__e')
 		{
@@ -743,8 +742,7 @@ public virtual class fflib_SObjectUnitOfWork
 		}
 	}
 
-	@TestVisible
-	private void assertForEventSObjectType(String sObjectType)
+	public void assertForEventSObjectType(String sObjectType)
 	{
 		if (sObjectType.length() > 3 && sObjectType.right(3) != '__e')
 		{
@@ -757,8 +755,7 @@ public virtual class fflib_SObjectUnitOfWork
 		}
 	}
 
-	@TestVisible
-	private void assertForSupportedSObjectType(Map<String, Object> theMap, String sObjectType)
+	public void assertForSupportedSObjectType(Map<String, Object> theMap, String sObjectType)
 	{
 		if (!theMap.containsKey(sObjectType))
 		{
@@ -771,7 +768,7 @@ public virtual class fflib_SObjectUnitOfWork
 		}
 	}
 
-    private class Relationships
+    public class Relationships
     {
         private List<IRelationship> m_relationships = new List<IRelationship>();
 
@@ -841,12 +838,12 @@ public virtual class fflib_SObjectUnitOfWork
         }
     }
 
-    private interface IRelationship
+    public interface IRelationship
     {
         void resolve();
     }
 
-    private class RelationshipByExternalId implements IRelationship
+    public class RelationshipByExternalId implements IRelationship
     {
         public SObject Record;
         public Schema.SObjectField RelatedToField;
@@ -863,7 +860,7 @@ public virtual class fflib_SObjectUnitOfWork
         }
     }
 
-    private class Relationship implements IRelationship
+    public class Relationship implements IRelationship
     {
         public SObject Record;
         public Schema.SObjectField RelatedToField;
@@ -875,7 +872,7 @@ public virtual class fflib_SObjectUnitOfWork
         }
     }
 
-    private class EmailRelationship implements IRelationship
+    public class EmailRelationship implements IRelationship
     {
         public Messaging.SingleEmailMessage email;
         public SObject relatedTo;
