@@ -494,6 +494,68 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
             );
     }
 
+/**
+ * Create uow with work that fails
+ *
+ *	Testing:
+ *
+ *		- Correct events are fired when commitWork fails during DoWork processing with allOrNone = false
+ *
+ */
+@isTest
+private static void testDerivedUnitOfWork_CommitDoWorkFailPartialFailure()
+{
+    // Insert Opportunities with UnitOfWork
+    MockDMLPartial mockDML = new MockDMLPartial();
+    DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS, mockDML);
+    Opportunity opp = new Opportunity();
+    opp.Name = 'UoW Test Name 1';
+    opp.StageName = 'Open';
+    opp.CloseDate = System.today();
+    uow.registerNew(new List<SObject>{opp});
+
+    // register work that will fail during processing
+    FailDoingWorkPartialFailure fdw = new FailDoingWorkPartialFailure();
+    uow.registerWork(fdw);
+
+    Boolean didFail = false;
+    FailDoingWorkException caughtEx = null;
+    fflib_SObjectUnitOfWorkPartial.IResponse resp;
+
+    try {
+        resp = uow.commitWork(false);
+        System.debug(resp);
+    }
+    catch (FailDoingWorkException fdwe) {            
+        didFail = true;
+        caughtEx = fdwe;
+    }
+
+    // Assert Results
+    //System.assertEquals(didFail, false, 'didFail');
+    //System.assert(caughtEx.getMessage().contains('Work failed.'), String.format('Exception message was ', new List<String> { caughtEx.getMessage() }));
+
+    assertEvents(new List<String> {
+            'onCommitWorkStarting',
+            'onPublishBeforeEventsStarting',
+            'onPublishBeforeEventsFinished',
+            'onDMLStarting',
+            'onDMLFinished',
+            'onDoWorkStarting',
+            'onDoWorkFinished',
+            'onCommitWorkFinishing',
+            'onPublishAfterEventsStarting',
+            'onPublishAfterEventsFinished',
+            'onCommitWorkFinished'
+        }
+        , uow.getCommitWorkEventsFired(), new Set<Schema.SObjectType>(MY_SOBJECTS), uow.getRegisteredTypes());
+        //assert result map
+        System.assertEquals(
+            'Work failed.'
+            ,resp.getDoWorkPartialFailures().get('FailDoingWorkPartialFailure').getMessage()
+        );
+}
+
     /**
      * 
      * Try registering two instances of the same record as dirty. Second register should overwrite first.
@@ -977,6 +1039,88 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
         }
     }
 
+    @IsTest
+    private static void testRegisterFailuresForCoverage() {
+        // GIVEN a list of existing records
+        Opportunity opportunityA = new Opportunity(
+                Id = fflib_IDGenerator.generate(Opportunity.SObjectType),
+                Name = 'test name A',
+                StageName = 'Open',
+                CloseDate = System.today());
+        Opportunity opportunityB = new Opportunity(
+                Id = fflib_IDGenerator.generate(Opportunity.SObjectType),
+                Name = 'test name B',
+                StageName = 'Open',
+                CloseDate = System.today());
+
+        MockDMLPartial mockDML = new MockDMLPartial();
+        fflib_SObjectUnitOfWorkPartial uow = new fflib_SObjectUnitOfWorkPartial(MY_SOBJECTS, mockDML);
+        uow.registerDirty(new List<Opportunity>{ opportunityA, opportunityB });
+
+        // WHEN we register the records again with different fields updated
+        List<Opportunity> recordsWithStageUpdate = new List<Opportunity>
+        {
+                new Opportunity(Id = opportunityA.Id, StageName = 'Closed'),
+                new Opportunity(Id = opportunityB.Id, StageName = 'Closed')
+        };
+        List<Opportunity> recordsWithAmountUpdate = new List<Opportunity>
+        {
+                new Opportunity(Id = opportunityA.Id, Amount = 250),
+                new Opportunity(Id = opportunityB.Id, Amount = 250)
+        };
+        try{
+            uow.registerRelationship(new Account(), Opportunity.Name, Opportunity.CloseDate, 'notanId');
+            System.assert(false,'none registered type should fail');
+        }catch(Exception e){
+            System.assert(e.getMessage().contains('SObject type Account is not supported by this unit of work'),e.getMessage());
+        }
+        try{
+            uow.registerRelationship(opportunityA, null, Opportunity.CloseDate, 'notanId');
+            System.assert(false,'null relatedto field should fail');
+        }catch(Exception e){
+            System.assert(e.getMessage().contains('Invalid argument: relatedToField.'),e.getMessage());
+        }
+        try{
+            uow.registerRelationship(opportunityA, Opportunity.Name, Opportunity.CloseDate, 'notanId');
+            System.assert(false,'none relationship field should fail');
+        }catch(Exception e){
+            System.assert(e.getMessage().contains('Invalid argument: relatedToField. Field supplied is not a relationship field.'),e.getMessage());
+        }
+        try{
+            uow.registerRelationship(opportunityA, Opportunity.AccountId, Opportunity.AccountId, 'notanId');
+            System.assert(false,'none relationship field should fail');
+        }catch(Exception e){
+            System.assert(e.getMessage().contains('Invalid argument: externalIdField. Field supplied is not a known field on the target sObject.'),e.getMessage());
+        }
+        uow.registerDirty(recordsWithStageUpdate, new List<SObjectField> { Opportunity.StageName });
+        uow.registerDirty(recordsWithAmountUpdate, new List<SObjectField> { Opportunity.Amount });
+        fflib_SObjectUnitOfWorkPartial.IResponse resp = uow.commitWork(false);
+        System.debug(resp);
+        
+        for(Schema.SObjectType sObjectType:resp.getUpdateDmlByType().keySet()){
+            for(Database.SaveResult dsr:resp.getUpdateDmlByType().get(sObjectType)){
+                System.assertEquals(true, dsr.isSuccess());
+            }
+        }
+        
+        for(Schema.SObjectType sObjectType:resp.getPublishBeforeEvents().keySet()){
+            System.assert(resp.getPublishBeforeEvents().get(sObjectType).isEmpty(),'getPublishBeforeEvents Should be empty');
+        }
+        
+        for(Schema.SObjectType sObjectType:resp.getDeleteDmlByType().keySet()){
+            System.assert(resp.getDeleteDmlByType().get(sObjectType).isEmpty(),'getDeleteDmlByType Should be empty');
+        }
+        
+        for(Schema.SObjectType sObjectType:resp.getEmptyRecycleBinByType().keySet()){
+            System.assert(resp.getEmptyRecycleBinByType().get(sObjectType).isEmpty(),'getEmptyRecycleBinByType Should be empty');
+        }
+        
+        for(Schema.SObjectType sObjectType:resp.getPublishAfterEvents().keySet()){
+            System.assert(resp.getPublishAfterEvents().get(sObjectType).isEmpty(),'getPublishAfterEvents Should be empty');
+        }
+        
+    }
+
     /**
      * Assert that actual events exactly match expected events (size, order and name)
      * and types match expected types
@@ -1000,7 +1144,7 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
         {
             System.assertEquals(true, actualTypes.contains(sObjectType), String.format('Type {0} was not registered.', new List<String> { sObjectType.getDescribe().getName() }));
         }
-    }    
+    }
 
     /**
      * DoWork implementation that throws exception during processing
@@ -1008,6 +1152,17 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
     private class FailDoingWork implements fflib_SObjectUnitOfWork.IDoWork
     {
         public void doWork()
+        {
+            throw new FailDoingWorkException('Work failed.');
+        }
+    }
+
+    /**
+    * DoWork implementation that throws exception during processing
+    */
+    private class FailDoingWorkPartialFailure implements fflib_SObjectUnitOfWorkPartial.IDoWorkPartial
+    {
+        public Object doWork()
         {
             throw new FailDoingWorkException('Work failed.');
         }
