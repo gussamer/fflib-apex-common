@@ -119,6 +119,47 @@ public virtual class fflib_Application
 		}
 	}
 
+    public virtual class UnitOfWorkPartialFactory extends UnitOfWorkFactory implements fflib_IUnitOfWorkPartialFactory
+    {
+		protected fflib_ISObjectUnitOfWorkPartial m_mockUowPartial;
+        public UnitOfWorkPartialFactory(List<SObjectType> objectTypes){
+            super(objectTypes);
+        }
+        
+        public virtual fflib_ISObjectUnitOfWorkPartial newInstance(Boolean allOrNone)
+        {
+            // Mock?
+			if(m_mockUowPartial!=null)
+				return m_mockUowPartial;
+            return new fflib_SObjectUnitOfWorkPartial(m_objectTypes);
+        }
+        public virtual fflib_ISObjectUnitOfWorkPartial newInstance(fflib_SObjectUnitOfWorkPartial.IDMLP dml)
+        {
+            // Mock?
+			if(m_mockUowPartial!=null)
+				return m_mockUowPartial;
+            return new fflib_SObjectUnitOfWorkPartial(m_objectTypes,dml);
+        }
+        public virtual fflib_ISObjectUnitOfWorkPartial newInstance(fflib_SObjectUnitOfWorkPartial.IResponse resp)
+        {
+            // Mock?
+			if(m_mockUowPartial!=null)
+				return m_mockUowPartial;
+            return new fflib_SObjectUnitOfWorkPartial(m_objectTypes,resp);
+        }
+        public virtual fflib_ISObjectUnitOfWorkPartial newInstance(List<SObjectType> objectTypes, Boolean allOrNone)
+        {
+            // Mock?
+			if(m_mockUowPartial!=null)
+				return m_mockUowPartial;
+            return new fflib_SObjectUnitOfWorkPartial(m_objectTypes);
+        }
+        public virtual fflib_ISObjectUnitOfWorkPartial newInstance(List<SObjectType> objectTypes, fflib_SObjectUnitOfWorkPartial.IResponse resp){}
+        public virtual fflib_ISObjectUnitOfWorkPartial newInstance(List<SObjectType> objectTypes, fflib_SObjectUnitOfWorkPartial.IDMLP dml){}
+        public virtual fflib_ISObjectUnitOfWorkPartial newInstance(List<SObjectType> objectTypes, fflib_SObjectUnitOfWorkPartial.IDMLP dml, fflib_SObjectUnitOfWorkPartial.IResponse resp){}
+        
+    }
+
 	/**
 	 * Simple Service Factory implementation
 	 **/
