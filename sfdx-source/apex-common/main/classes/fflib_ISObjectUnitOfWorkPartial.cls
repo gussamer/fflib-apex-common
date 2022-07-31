@@ -31,5 +31,5 @@ public interface fflib_ISObjectUnitOfWorkPartial extends fflib_ISObjectUnitOfWor
     /**
      * Takes all the work that has been registered with the UnitOfWork and commits it to the database with allOrNone = false
      **/
-    Map<String,Map<String,Object>> commitWork(Boolean allOrNone);
+    fflib_SObjectUnitOfWorkPartial.IResponse commitWork(Boolean allOrNone);
 }

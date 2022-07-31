@@ -1,93 +1,12 @@
-public virtual class fflib_SObjectUnitOfWorkPartial 
-    extends fflib_SObjectUnitOfWork 
-    implements fflib_ISObjectUnitOfWorkPartial {    
-        public Map<String, Type> m_eventTypeMap = new Map<String, Type>{
-            'publishBeforeEventsStarting' => List<Database.SaveResult>.class
-            ,'insertDmlByType' => List<Database.SaveResult>.class
-            ,'updateDmlByType' => List<Database.SaveResult>.class
-            ,'deleteDmlByType' => List<Database.DeleteResult>.class
-            ,'emptyRecycleBinByType' => List<Database.EmptyRecycleBinResult>.class
-            ,'publishAfterEvents' => List<Database.SaveResult>.class
-        };
-        protected Map<String, List<SObject>> m_publishAfterListByType = new Map<String, List<SObject>>();
-        protected List<IDoWorkPartial> m_workListPartial = new List<IDoWorkPartial>();
-        @TestVisible protected IEmailWorkPartial m_emailWorkPartial = new SendEmailWorkPartial();
-        protected IDMLP m_dmlp;    
-        /**
-         * Interface describes work to be performed during the commitWork method
-         **/
-        public interface IDoWorkPartial
-        {
-            void doWork(Map<String,Map<String,Object>> resultMap);
-        }
-        
-        public interface IDMLP
-        {
-            List<Database.SaveResult> dmlInsert(List<SObject> objList);
-            List<Database.SaveResult> dmlUpdate(List<SObject> objList);
-            List<Database.DeleteResult> dmlDelete(List<SObject> objList);
-            List<Database.SaveResult> eventPublish(List<SObject> objList);
-            List<Database.EmptyRecycleBinResult> emptyRecycleBin(List<SObject> objList);
-        }
-    
-        public virtual class SimpleDMLPartial implements IDMLP
-        {
-            public virtual List<Database.SaveResult> dmlInsert(List<SObject> objList)
-            {
-                return Database.insert(objList,false);
-            }
-            public virtual List<Database.SaveResult> dmlUpdate(List<SObject> objList)
-            {
-                return Database.update(objList,false);
-            }
-            public virtual List<Database.DeleteResult> dmlDelete(List<SObject> objList)
-            {
-                return Database.delete(objList,false);
-            }
-            public virtual List<Database.SaveResult> eventPublish(List<SObject> objList)
-            {
-                return EventBus.publish(objList);
-            }
-            public virtual List<Database.EmptyRecycleBinResult> emptyRecycleBin(List<SObject> objList)
-            {
-                if (objList.isEmpty())
-                {
-                    return null;
-                }    
-                return Database.emptyRecycleBin(objList);
-            }
-        }
-
-        /**
-         * Internal implementation of Messaging.sendEmail, see outer class registerEmail method
-         **/
-        public interface IEmailWorkPartial extends IDoWorkPartial
-        {
-            void registerEmail(Messaging.Email email);
-        }
-    
-        private class SendEmailWorkPartial implements IEmailWorkPartial
-        {
-            private List<Messaging.Email> emails;
-    
-            public SendEmailWorkPartial()
-            {
-                this.emails = new List<Messaging.Email>();
-            }
-    
-            public void registerEmail(Messaging.Email email)
-            {
-                this.emails.add(email);
-            }
-    
-            public void doWork(Map<String,Map<String,Object>> resultMap)
-            {
-                if (emails.size() > 0){
-                    resultMap.put('SendEmailWork',new Map<String,Object>());
-                    resultMap.get('SendEmailWork').put('Email',Messaging.sendEmail(emails,false));
-                }
-            }
-        }
+public virtual class fflib_SObjectUnitOfWorkPartial
+    extends fflib_SObjectUnitOfWork
+    implements fflib_ISObjectUnitOfWorkPartial 
+{
+    protected Map<String, List<SObject>> m_publishAfterListByType = new Map<String, List<SObject>>();
+    @TestVisible protected List<Messaging.Email> m_emailWorkPartial = new List<Messaging.Email>();
+    protected List<IDoWorkPartial> m_workListPartial = new List<IDoWorkPartial>();
+    protected IDMLP m_dmlp;
+    public IResponse m_resp;
     /**
      * Constructs a new UnitOfWork to support work against the given object list
      *
@@ -95,21 +14,35 @@ public virtual class fflib_SObjectUnitOfWorkPartial
      */
     public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes)
     {
-      this(sObjectTypes,new SimpleDMLPartial());
+        this(sObjectTypes,new SimpleDMLPartial(),new Response(sObjectTypes));
+    }
+    public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes, IResponse resp)
+    {
+        this(sObjectTypes,new SimpleDMLPartial(),resp);
     }
     public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes, IDMLP dml)
     {
-        super(sObjectTypes);
-        m_dmlp = dml;
-        for (Schema.SObjectType sObjectType : m_sObjectTypes)
-        {
-            // register the type
-            handleRegisterTypePartial(sObjectType);
-        }
+        this(sObjectTypes,dml,new Response(sObjectTypes));
     }
     public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes, fflib_SObjectUnitOfWork.IDML dml)
     {
         super(sObjectTypes,dml);
+        m_dmlp = new SimpleDMLPartial();
+        m_resp = new Response(sObjectTypes);
+        for (Schema.SObjectType sObjectType : m_sObjectTypes)
+        {
+            handleRegisterTypePartial(sObjectType);
+        }
+    }
+    public fflib_SObjectUnitOfWorkPartial(List<Schema.SObjectType> sObjectTypes, IDMLP dml, IResponse resp)
+    {
+        super(sObjectTypes);
+        m_dmlp = dml;
+        m_resp = resp;
+        for (Schema.SObjectType sObjectType : m_sObjectTypes)
+        {
+            handleRegisterTypePartial(sObjectType);
+        }
     }
     /***
      * virtuals
@@ -117,37 +50,37 @@ public virtual class fflib_SObjectUnitOfWorkPartial
     public virtual void onRegisterTypePartial(Schema.SObjectType sObjectType) {
         onRegisterType(sObjectType);
     }
-    public virtual void onCommitWorkStartingPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onCommitWorkStartingPartial(IResponse resp) {
         onCommitWorkStarting();
     }
-    public virtual void onPublishBeforeEventsStartingPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onPublishBeforeEventsStartingPartial(IResponse resp) {
         onPublishBeforeEventsStarting();
     }
-    public virtual void onPublishBeforeEventsFinishedPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onPublishBeforeEventsFinishedPartial(IResponse resp) {
         onPublishBeforeEventsFinished();
     }
-    public virtual void onDMLStartingPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onDMLStartingPartial(IResponse resp) {
         onDMLStarting();
     }
-    public virtual void onDMLFinishedPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onDMLFinishedPartial(IResponse resp) {
         onDMLFinished();
     }
-    public virtual void onDoWorkStartingPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onDoWorkStartingPartial(IResponse resp) {
         onDoWorkStarting();
     }
-    public virtual void onDoWorkFinishedPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onDoWorkFinishedPartial(IResponse resp) {
         onDoWorkFinished();
     }
-    public virtual void onPublishAfterEventsStartingPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onPublishAfterEventsStartingPartial(IResponse resp) {
         onPublishAfterSuccessEventsStarting();
     }
-    public virtual void onPublishAfterEventsFinishedPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onPublishAfterEventsFinishedPartial(IResponse resp) {
         onPublishAfterSuccessEventsFinished();
     }
-    public virtual void onCommitWorkFinishingPartial(Map<String,Map<String,Object>> resultMap) {
+    public virtual void onCommitWorkFinishingPartial(IResponse resp) {
         onCommitWorkFinishing();
     }
-    public virtual void onCommitWorkFinishedPartial(Map<String,Map<String,Object>> resultMap) {}
+    public virtual void onCommitWorkFinishedPartial(IResponse resp) {}
 
     /**
      * Registers the type to be used for DML operations
@@ -199,143 +132,342 @@ public virtual class fflib_SObjectUnitOfWorkPartial
         m_workListPartial.add(work);
     }
     /**
+     * Registers the given email to be sent during the commitWork
+     **/
+    public void registerEmailPartial(Messaging.Email email)
+    {
+        m_emailWorkPartial.add(email);
+    }
+    /**
      * Takes all the work that has been registered with the UnitOfWork and commits it to the database with allOrNone set a passed
      **/
-    public Map<String,Map<String,Object>> commitWork(Boolean allOrNone){
+    public IResponse commitWork(Boolean allOrNone){
         if(allOrNone){
             this.commitWork();
             return null;
         }else{
-            //map = Unit of Work Event -> SObject Type Name -> Object containing Database Result Lists
-            Map<String,Map<String,Object>> returnMap = new Map<String,Map<String,Object>>();
-            doCommitWork(returnMap);
-            doAfterCommitWorkStepsPartial(returnMap);
-            return returnMap;
+            m_resp = new Response();
+            doCommitWork(m_resp);
+            doAfterCommitWorkStepsPartial(m_resp);
+            return m_resp;
         }
     }
 
-	private void doCommitWork(Map<String,Map<String,Object>> resultMap)
+	private void doCommitWork(IResponse resp)
 	{
-		onCommitWorkStartingPartial(resultMap);
-		onPublishBeforeEventsStartingPartial(resultMap);
-		publishBeforeEventsStartingPartial(resultMap);
-		onPublishBeforeEventsFinishedPartial(resultMap);
+		onCommitWorkStartingPartial(resp);
+		onPublishBeforeEventsStartingPartial(resp);
+		publishBeforeEventsPartial(resp);
+		onPublishBeforeEventsFinishedPartial(resp);
 
-		onDMLStartingPartial(resultMap);
-		insertDmlByTypePartial(resultMap);
-		updateDmlByTypePartial(resultMap);
-		deleteDmlByTypePartial(resultMap);
-		emptyRecycleBinByTypePartial(resultMap);
+		onDMLStartingPartial(resp);
+		insertDmlByTypePartial(resp);
+		updateDmlByTypePartial(resp);
+		deleteDmlByTypePartial(resp);
+		emptyRecycleBinByTypePartial(resp);
 		resolveEmailRelationships();
-		onDMLFinishedPartial(resultMap);
+        emailWorkPartial(resp);
+		onDMLFinishedPartial(resp);
 
-		onDoWorkStartingPartial(resultMap);
-		doWorkPartial(resultMap);
-		onDoWorkFinishedPartial(resultMap);
-		onCommitWorkFinishingPartial(resultMap);
+		onDoWorkStartingPartial(resp);
+		doWorkPartial(resp);
+		onDoWorkFinishedPartial(resp);
+		onCommitWorkFinishingPartial(resp);
 	}
 
-	private void doAfterCommitWorkStepsPartial(Map<String,Map<String,Object>> resultMap)
+	private void doAfterCommitWorkStepsPartial(IResponse resp)
 	{
-		doAfterCommitWorkAfterStepsPartial(resultMap);
-        onCommitWorkFinishedPartial(resultMap);
+		doAfterCommitWorkAfterStepsPartial(resp);
+        onCommitWorkFinishedPartial(resp);
 	}
 
-	private void doAfterCommitWorkAfterStepsPartial(Map<String,Map<String,Object>> resultMap)
+	private void doAfterCommitWorkAfterStepsPartial(IResponse resp)
 	{
-		onPublishAfterEventsStartingPartial(resultMap);
-		publishAfterEventsPartial(resultMap);
-		onPublishAfterEventsFinishedPartial(resultMap);
+		onPublishAfterEventsStartingPartial(resp);
+		publishAfterEventsPartial(resp);
+		onPublishAfterEventsFinishedPartial(resp);
 	}
 
-	private void publishBeforeEventsStartingPartial(Map<String,Map<String,Object>> resultMap)
+	private void publishBeforeEventsPartial(IResponse resp)
 	{
-		resultMap.put('publishBeforeEventsStarting',new Map<String,Object>());
-    for (Schema.SObjectType sObjectType : m_sObjectTypes)
+        for (Schema.SObjectType sObjectType : m_sObjectTypes)
 		{
-			resultMap.get('publishBeforeEventsStarting').put(
-                sObjectType.getDescribe().getName()
+			resp.addPublishBeforeEvents(
+                sObjectType
                 ,m_dmlp.eventPublish(m_publishBeforeListByType.get(sObjectType.getDescribe().getName()))
             );
 		}
 	}
 
-	private void insertDmlByTypePartial(Map<String,Map<String,Object>> resultMap)
+	private void insertDmlByTypePartial(IResponse resp)
 	{
-		resultMap.put('insertDmlByType',new Map<String,Object>());
 		for (Schema.SObjectType sObjectType : m_sObjectTypes)
 		{
 			m_relationships.get(sObjectType.getDescribe().getName()).resolve();
-            resultMap.get('insertDmlByType').put(
-                sObjectType.getDescribe().getName()
+            resp.addInsertDmlByType(
+                sObjectType
                 ,m_dmlp.dmlInsert(m_newListByType.get(sObjectType.getDescribe().getName()))
             );
 		}
 	}
 
-	private void updateDmlByTypePartial(Map<String,Map<String,Object>> resultMap)
+	private void updateDmlByTypePartial(IResponse resp)
 	{
-		resultMap.put('updateDmlByType',new Map<String,Object>());
 		for (Schema.SObjectType sObjectType : m_sObjectTypes)
 		{
-            resultMap.get('updateDmlByType').put(
-                sObjectType.getDescribe().getName()
+            resp.addUpdateDmlByType(
+                sObjectType
                 ,m_dmlp.dmlUpdate(m_dirtyMapByType.get(sObjectType.getDescribe().getName()).values())
             );
 		}
 	}
 
-	private void deleteDmlByTypePartial(Map<String,Map<String,Object>> resultMap)
+	private void deleteDmlByTypePartial(IResponse resp)
 	{
-		resultMap.put('deleteDmlByType',new Map<String,Object>());
 		Integer objectIdx = m_sObjectTypes.size() - 1;
 		while (objectIdx >= 0)
 		{
-            resultMap.get('deleteDmlByType').put(
-                m_sObjectTypes[objectIdx].getDescribe().getName()
+            resp.addDeleteDmlByType(
+                m_sObjectTypes[objectIdx]
                 ,m_dmlp.dmlDelete(m_deletedMapByType.get(m_sObjectTypes[objectIdx--].getDescribe().getName()).values())
             );
 		}
 	}
 
-	private void emptyRecycleBinByTypePartial(Map<String,Map<String,Object>> resultMap)
+	private void emptyRecycleBinByTypePartial(IResponse resp)
 	{
-		resultMap.put('emptyRecycleBinByType',new Map<String,Object>());
 		Integer objectIdx = m_sObjectTypes.size() - 1;
 		while (objectIdx >= 0)
 		{
-            resultMap.get('emptyRecycleBinByType').put(
-                m_sObjectTypes[objectIdx].getDescribe().getName()
+            resp.addEmptyRecycleBinByType(
+                m_sObjectTypes[objectIdx]
                 ,m_dmlp.emptyRecycleBin(m_emptyRecycleBinMapByType.get(m_sObjectTypes[objectIdx--].getDescribe().getName()).values())
             );
 		}
 	}
 
-	private void doWorkPartial(Map<String,Map<String,Object>> resultMap)
+	private void emailWorkPartial(IResponse resp)
 	{
-		m_workListPartial.add(m_emailWorkPartial);
+		resp.addSendEmailWork(m_dmlp.sendEmail(m_emailWorkPartial));
+	}
+
+    private String getWorkName(IDoWorkPartial work){
+        return work.toString().left(work.toString().indexOf(':'));
+    }
+
+	private void doWorkPartial(IResponse resp)
+	{
 		for (IDoWorkPartial work : m_workListPartial)
 		{
-      try{
-        work.doWork(resultMap);
-      }catch(Exception e){
-        if(!resultMap.containsKey('doWorkPartial'))
-          resultMap.put('doWorkPartial',new Map<String,Object>());
-        resultMap.get('doWorkPartial').put(work.toString(),e);
-      }
+            try{
+                resp.addDoWorkPartialResults(getWorkName(work),work.doWork());
+            }catch(Exception e){
+                resp.addDoWorkPartialFailures(getWorkName(work),e);
+            }
 		}
 	}
 
-	private void publishAfterEventsPartial(Map<String,Map<String,Object>> resultMap)
+	private void publishAfterEventsPartial(IResponse resp)
 	{
-		resultMap.put('publishAfterEvents',new Map<String,Object>());
 		for (Schema.SObjectType sObjectType : m_sObjectTypes)
 		{
-			m_dmlp.eventPublish(m_publishAfterListByType.get(sObjectType.getDescribe().getName()));
-            resultMap.get('publishAfterEvents').put(
-                sObjectType.getDescribe().getName()
+            resp.addPublishAfterEvents(
+                sObjectType
                 ,m_dmlp.eventPublish(m_publishAfterListByType.get(sObjectType.getDescribe().getName()))
             );
 		}
 	}
+    /**
+     * Interface describes work to be performed during the commitWork method
+     **/
+    public interface IDoWorkPartial
+    {
+        Object doWork();
+    }
+    
+    public interface IDMLP
+    {
+        List<Database.SaveResult> dmlInsert(List<SObject> objList);
+        List<Database.SaveResult> dmlUpdate(List<SObject> objList);
+        List<Database.DeleteResult> dmlDelete(List<SObject> objList);
+        List<Database.SaveResult> eventPublish(List<SObject> objList);
+        List<Database.EmptyRecycleBinResult> emptyRecycleBin(List<SObject> objList);
+        List<Messaging.SendEmailResult> sendEmail(List<Messaging.Email> emailList);
+    }
+
+    public virtual class SimpleDMLPartial implements IDMLP
+    {
+        public virtual List<Database.SaveResult> dmlInsert(List<SObject> objList)
+        {
+            return Database.insert(objList,false);
+        }
+        public virtual List<Database.SaveResult> dmlUpdate(List<SObject> objList)
+        {
+            return Database.update(objList,false);
+        }
+        public virtual List<Database.DeleteResult> dmlDelete(List<SObject> objList)
+        {
+            return Database.delete(objList,false);
+        }
+        public virtual List<Database.SaveResult> eventPublish(List<SObject> objList)
+        {
+            return EventBus.publish(objList);
+        }
+        public virtual List<Database.EmptyRecycleBinResult> emptyRecycleBin(List<SObject> objList)
+        {
+            if (objList.isEmpty())
+            {
+                return null;
+            }
+            return Database.emptyRecycleBin(objList);
+        }
+        public virtual List<Messaging.SendEmailResult> sendEmail(List<Messaging.Email> emails)
+        {
+            return Messaging.sendEmail(emails,false);
+        }
+    }
+
+    public interface IResponse 
+    {
+        void handleRegisterType(Schema.SObjectType sObjectType);
+        void addPublishBeforeEvents(Schema.SObjectType sObjectType,List<Database.SaveResult> results);
+        void addInsertDmlByType(Schema.SObjectType sObjectType,List<Database.SaveResult> results);
+        void addUpdateDmlByType(Schema.SObjectType sObjectType,List<Database.SaveResult> results);
+        void addDeleteDmlByType(Schema.SObjectType sObjectType,List<Database.DeleteResult> results);
+        void addEmptyRecycleBinByType(Schema.SObjectType sObjectType,List<Database.EmptyRecycleBinResult> results);
+        void addSendEmailWork(List<Messaging.SendEmailResult> results);
+        void addPublishAfterEvents(Schema.SObjectType sObjectType,List<Database.SaveResult> results);
+        void addDoWorkPartialResults(String doWorkName,Object results);
+        void addDoWorkPartialFailures(String doWorkName,Exception results);
+        Map<Schema.SObjectType,List<Database.SaveResult>> getPublishBeforeEvents();
+        Map<Schema.SObjectType,List<Database.SaveResult>> getInsertDmlByType();
+        Map<Schema.SObjectType,List<Database.SaveResult>> getUpdateDmlByType();
+        Map<Schema.SObjectType,List<Database.DeleteResult>> getDeleteDmlByType();
+        Map<Schema.SObjectType,List<Database.EmptyRecycleBinResult>> getEmptyRecycleBinByType();
+        List<Messaging.SendEmailResult> getSendEmailWork();
+        Map<Schema.SObjectType,List<Database.SaveResult>> getPublishAfterEvents();
+        Map<String,Object> getDoWorkPartialResults();
+        Map<String,Exception> getDoWorkPartialFailures();
+    }
+    
+    public virtual class Response implements IResponse
+    {
+        Map<Schema.SObjectType,List<Database.SaveResult>> publishBeforeEvents;
+        Map<Schema.SObjectType,List<Database.SaveResult>> insertDmlByType;
+        Map<Schema.SObjectType,List<Database.SaveResult>> updateDmlByType;
+        Map<Schema.SObjectType,List<Database.DeleteResult>> deleteDmlByType;
+        Map<Schema.SObjectType,List<Database.EmptyRecycleBinResult>> emptyRecycleBinByType;
+        List<Messaging.SendEmailResult> sendEmailWork;
+        Map<Schema.SObjectType,List<Database.SaveResult>> publishAfterEvents;
+        Map<String,Object> doWorkPartialResults;
+        Map<String,Exception> doWorkPartialFailures;
+        public Response()
+        {
+            publishBeforeEvents = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            insertDmlByType = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            updateDmlByType = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            deleteDmlByType = new Map<Schema.SObjectType,List<Database.DeleteResult>>();
+            emptyRecycleBinByType = new Map<Schema.SObjectType,List<Database.EmptyRecycleBinResult>>();
+            sendEmailWork = new List<Messaging.SendEmailResult>();
+            publishAfterEvents = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            doWorkPartialResults = new Map<String,Object>();
+            doWorkPartialFailures = new Map<String,Exception>();
+        }
+        public Response(List<Schema.SObjectType> sObjectTypes)
+        {
+            publishBeforeEvents = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            insertDmlByType = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            updateDmlByType = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            deleteDmlByType = new Map<Schema.SObjectType,List<Database.DeleteResult>>();
+            emptyRecycleBinByType = new Map<Schema.SObjectType,List<Database.EmptyRecycleBinResult>>();
+            sendEmailWork = new List<Messaging.SendEmailResult>();
+            publishAfterEvents = new Map<Schema.SObjectType,List<Database.SaveResult>>();
+            doWorkPartialResults = new Map<String,Object>();
+            doWorkPartialFailures = new Map<String,Exception>();
+            for(Schema.SObjectType sObjectType:sObjectTypes){
+                handleRegisterType(sObjectType);
+            }
+        }
+        public virtual void handleRegisterType(Schema.SObjectType sObjectType)
+        {
+            publishBeforeEvents.put(sObjectType,new List<Database.SaveResult>());
+            insertDmlByType.put(sObjectType,new List<Database.SaveResult>());
+            updateDmlByType.put(sObjectType,new List<Database.SaveResult>());
+            deleteDmlByType.put(sObjectType,new List<Database.DeleteResult>());
+            emptyRecycleBinByType.put(sObjectType,new List<Database.EmptyRecycleBinResult>());
+            publishAfterEvents.put(sObjectType,new List<Database.SaveResult>());
+        }
+        public virtual void addPublishBeforeEvents(Schema.SObjectType sObjectType,List<Database.SaveResult> results)
+        {
+            publishBeforeEvents.put(sObjectType,results);
+        }
+        public virtual void addInsertDmlByType(Schema.SObjectType sObjectType,List<Database.SaveResult> results)
+        {
+            insertDmlByType.put(sObjectType,results);
+        }
+        public virtual void addUpdateDmlByType(Schema.SObjectType sObjectType,List<Database.SaveResult> results)
+        {
+            updateDmlByType.put(sObjectType,results);
+        }
+        public virtual void addDeleteDmlByType(Schema.SObjectType sObjectType,List<Database.DeleteResult> results)
+        {
+            deleteDmlByType.put(sObjectType,results);
+        }
+        public virtual void addEmptyRecycleBinByType(Schema.SObjectType sObjectType,List<Database.EmptyRecycleBinResult> results)
+        {
+            emptyRecycleBinByType.put(sObjectType,results);
+        }
+        public virtual void addSendEmailWork(List<Messaging.SendEmailResult> results)
+        {
+            sendEmailWork = results;
+        }
+        public virtual void addPublishAfterEvents(Schema.SObjectType sObjectType,List<Database.SaveResult> results)
+        {
+            publishAfterEvents.put(sObjectType,results);
+        }
+        public virtual void addDoWorkPartialResults(String doWorkName,Object results)
+        {
+            doWorkPartialResults.put(doWorkName,results);
+        }
+        public virtual void addDoWorkPartialFailures(String doWorkName,Exception results)
+        {
+            doWorkPartialFailures.put(doWorkName,results);
+        }
+        public virtual Map<Schema.SObjectType,List<Database.SaveResult>> getPublishBeforeEvents()
+        {
+            return publishBeforeEvents;
+        }
+        public virtual Map<Schema.SObjectType,List<Database.SaveResult>> getInsertDmlByType()
+        {
+            return insertDmlByType;
+        }
+        public virtual Map<Schema.SObjectType,List<Database.SaveResult>> getUpdateDmlByType()
+        {
+            return updateDmlByType;
+        }
+        public virtual Map<Schema.SObjectType,List<Database.DeleteResult>> getDeleteDmlByType()
+        {
+            return deleteDmlByType;
+        }
+        public virtual Map<Schema.SObjectType,List<Database.EmptyRecycleBinResult>> getEmptyRecycleBinByType()
+        {
+            return emptyRecycleBinByType;
+        }
+        public virtual List<Messaging.SendEmailResult> getSendEmailWork()
+        {
+            return sendEmailWork;
+        }
+        public virtual Map<Schema.SObjectType,List<Database.SaveResult>> getPublishAfterEvents()
+        {
+            return publishAfterEvents;
+        }
+        public virtual Map<String,Object> getDoWorkPartialResults()
+        {
+            return doWorkPartialResults;
+        }
+        public virtual Map<String,Exception> getDoWorkPartialFailures()
+        {
+            return doWorkPartialFailures;
+        }
+    }
 }
