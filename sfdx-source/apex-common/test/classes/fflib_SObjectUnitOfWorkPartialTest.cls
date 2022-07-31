@@ -353,8 +353,7 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
 
         // Assert Results
         System.assertEquals(didFail, false, 'didFail');
-        //System.assert(caughtEx.getMessage().contains('REQUIRED_FIELD_MISSING'), String.format('Exception message was ', new List<String> { caughtEx.getMessage() }));
-
+        
         assertEvents(new List<String> {
               'onCommitWorkStarting',
               'onPublishBeforeEventsStarting',
@@ -469,8 +468,7 @@ private with sharing class fflib_SObjectUnitOfWorkPartialTest
         }
 
         // Assert Results
-        //System.assertEquals(didFail, false, 'didFail');
-        //System.assert(caughtEx.getMessage().contains('Work failed.'), String.format('Exception message was ', new List<String> { caughtEx.getMessage() }));
+        System.assertEquals(didFail, false, 'didFail');
 
         assertEvents(new List<String> {
                 'onCommitWorkStarting',
@@ -532,9 +530,8 @@ private static void testDerivedUnitOfWork_CommitDoWorkFailPartialFailure()
     }
 
     // Assert Results
-    //System.assertEquals(didFail, false, 'didFail');
-    //System.assert(caughtEx.getMessage().contains('Work failed.'), String.format('Exception message was ', new List<String> { caughtEx.getMessage() }));
-
+    System.assertEquals(didFail, false, 'didFail');
+    
     assertEvents(new List<String> {
             'onCommitWorkStarting',
             'onPublishBeforeEventsStarting',
@@ -592,7 +589,7 @@ private static void testDerivedUnitOfWork_CommitDoWorkFailPartialFailure()
      *
      *  Testing:
      *
-     *      - Exception is thrown stopping second registration
+     *      - first record is updated while second is not
      */
     @IsTest
     private static void testRegisterDirty_ExpectReplacementPartial()
